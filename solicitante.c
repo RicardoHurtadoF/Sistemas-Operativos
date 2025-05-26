@@ -10,7 +10,7 @@
 
 void enviar_solicitud(int fd, const char *linea) {
     write(fd, linea, strlen(linea));
-    write(fd, "\n", 1); // enviar salto de línea
+    write(fd, "\n", 1); 
 }
 
 void modo_archivo(const char *nombre_archivo, const char *pipe_name) {
@@ -30,7 +30,7 @@ void modo_archivo(const char *nombre_archivo, const char *pipe_name) {
     while (fgets(linea, sizeof(linea), archivo)) {
         enviar_solicitud(fd, linea);
         printf("Enviada solicitud: %s", linea);
-        sleep(1); // para simular comportamiento real
+        sleep(1); 
     }
 
     fclose(archivo);
