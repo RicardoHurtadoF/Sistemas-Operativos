@@ -45,5 +45,3 @@ Este proyecto consiste en la implementación de un sistema de préstamo de libro
 ## 🧪 Compilación y Ejecución
 
 ### Compilar
-```bash
-make
