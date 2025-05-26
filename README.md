@@ -17,8 +17,6 @@ Objetivos principales
 a. Resolver un problema utilizando procesos e hilos de la biblioteca POSIX.
 b. Emplear mecanismos de sincronización de procesos y comunicación de procesos usando pipes.
 c. Utilizar de forma correcta llamadas al sistema relacionadas con hilos y procesos.
----
-
 ## 🧩 Componentes del Proyecto
 
 ### 1. `solicitante.c`
