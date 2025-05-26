@@ -14,8 +14,11 @@
 Este proyecto consiste en la implementación de un sistema de préstamo de libros utilizando conceptos de programación de sistemas en lenguaje C. Se hace uso de procesos, hilos (`pthreads`), comunicación entre procesos con `pipes`, sincronización con semáforos y el manejo de archivos como base de datos.
 
 Objetivos principales
+
 a. Resolver un problema utilizando procesos e hilos de la biblioteca POSIX.
+
 b. Emplear mecanismos de sincronización de procesos y comunicación de procesos usando pipes.
+
 c. Utilizar de forma correcta llamadas al sistema relacionadas con hilos y procesos.
 ## 🧩 Componentes del Proyecto
 
