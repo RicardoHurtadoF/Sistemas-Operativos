@@ -2,11 +2,10 @@
 
 ## Proyecto: Sistema de Préstamo de Libros
 
-**Curso:** Sistemas Operativos - SIU4085  
+**Curso:** Sistemas Operativos  
 **Integrantes:**  
 - Andrés Mauricio Raba  
 - Ricardo Andrés Hurtado  
-**Fecha de entrega:** 30 de mayo de 2025  
 
 ---
 
