@@ -1,0 +1,39 @@
+Cálculo Diferencial, 120, 3
+1, D, 25-05-2025
+2, P, 20-05-2025
+3, D, 25-05-2025
+
+Álgebra Lineal, 111, 2
+1, D, 25-05-2025
+2, P, 22-05-2025
+
+Hamlet, 234, 2
+1, P, 23-05-2025
+2, D, 25-05-2025
+
+Alicia en el País de las Maravillas, 2133, 2
+1, D, 25-05-2025
+2, D, 25-05-2025
+
+Historia de Colombia, 223, 1
+1, P, 21-05-2025
+
+Redes de Computadores, 3400, 2
+1, P, 22-05-2025
+2, D, 25-05-2025
+
+Operating Systems, 2233, 3
+1, D, 25-05-2025
+2, P, 23-05-2025
+3, P, 24-05-2025
+
+Data Bases, 2234, 2
+1, D, 25-05-2025
+2, P, 20-05-2025
+
+Programming Languages, 2240, 1
+1, D, 25-05-2025
+
+Inteligencia Artificial, 3001, 2
+1, D, 25-05-2025
+2, D, 25-05-2025
