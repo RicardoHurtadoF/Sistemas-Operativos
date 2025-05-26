@@ -35,7 +35,7 @@ Este proyecto consiste en la implementación de un sistema de préstamo de libro
   - `s`: terminar ejecución
 
 ### 3. Archivos auxiliares
-- `bd_libros.txt`: Base de datos de libros inicial.
+- `libros.txt`: Base de datos de libros inicial.
 - `input_solicitudes.txt`: Archivo de solicitudes de prueba.
 - `Makefile`: Facilita la compilación del proyecto.
 - `salida.txt`: Archivo donde se guarda el estado final de la base de datos tras la ejecución.
