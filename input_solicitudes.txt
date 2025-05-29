@@ -1,4 +1,0 @@
-P, Cálculo Diferencial, 120
-R, Hamlet, 234
-D, Alicia en el País de las Maravillas, 2133
-Q, Salir, 0
