@@ -50,3 +50,30 @@ c. Utilizar de forma correcta llamadas al sistema relacionadas con hilos y proce
 ## 🧪 Compilación y Ejecución
 
 ### Compilar
+
+Para compilar ambos programas (`receptor` y `solicitante`) utiliza el Makefile incluido. Solo ejecuta:
+
+```bash
+make
+```
+
+###Uso con Makefile
+El Makefile incluye reglas para facilitar la ejecución:
+
+Ejecutar receptor:
+Antes de Ejecutar se debe tener Libros.txt
+```bash
+make run-receptor
+```
+
+Ejecutar solicitante en modo menú:
+
+```bash
+make run-solicitante
+```
+
+Ejecutar Prueba con Input_Solicitudes.txt
+
+```bash
+make run-test
+```
