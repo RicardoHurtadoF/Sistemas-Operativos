@@ -1,39 +1,61 @@
-Cálculo Diferencial, 120, 3
-1, D, 25-05-2025
-2, P, 20-05-2025
-3, D, 25-05-2025
+Cien años de soledad, 100, 2
+1, D, 27-05-2025
+2, P, 25-05-2025
 
-Álgebra Lineal, 111, 2
-1, D, 25-05-2025
-2, P, 22-05-2025
+El principito, 29062004, 1
+1, P, 26-05-2025
 
-Hamlet, 234, 2
-1, P, 23-05-2025
-2, D, 25-05-2025
+Don Quijote de la Mancha, 4951, 2
+1, P, 20-05-2025
+2, D, 28-05-2025
 
-Alicia en el País de las Maravillas, 2133, 2
-1, D, 25-05-2025
-2, D, 25-05-2025
+1984, 1984, 2
+1, D, 29-05-2025
+2, D, 29-05-2025
 
-Historia de Colombia, 223, 1
-1, P, 21-05-2025
+La sombra del viento, 1409, 1
+1, D, 29-05-2025
 
-Redes de Computadores, 3400, 2
-1, P, 22-05-2025
-2, D, 25-05-2025
+Alicia, 5149, 1
+1, D, 29-05-2025
 
-Operating Systems, 2233, 3
-1, D, 25-05-2025
-2, P, 23-05-2025
-3, P, 24-05-2025
+Silmarillion, 5767, 1
+1, D, 29-05-2025
 
-Data Bases, 2234, 2
-1, D, 25-05-2025
-2, P, 20-05-2025
+Relatos de un Naufrago, 5555, 1
+1, P, 24-05-2025
 
-Programming Languages, 2240, 1
-1, D, 25-05-2025
+Rayuela, 1963, 2
+1, D, 29-05-2025
+2, D, 28-05-2025
 
-Inteligencia Artificial, 3001, 2
-1, D, 25-05-2025
-2, D, 25-05-2025
+Crónica de una muerte anunciada, 1981, 1
+1, P, 25-05-2025
+
+El amor en los tiempos del cólera, 1985, 2
+1, D, 29-05-2025
+2, P, 26-05-2025
+
+Fahrenheit 451, 451, 1
+1, D, 29-05-2025
+
+Orgullo y prejuicio, 1813, 2
+1, P, 20-05-2025
+2, D, 29-05-2025
+
+Los juegos del hambre, 2008, 1
+1, D, 29-05-2025
+
+Cumbres Borrascosas, 1847, 1
+1, D, 29-05-2025
+
+Harry Potter y la piedra filosofal, 1997, 2
+1, P, 27-05-2025
+2, D, 29-05-2025
+
+It, 1986, 1
+1, D, 29-05-2025
+
+El nombre del viento, 2007, 2
+1, D, 29-05-2025
+2, D, 28-05-2025
