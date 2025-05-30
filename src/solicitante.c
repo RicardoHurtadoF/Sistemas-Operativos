@@ -1,5 +1,4 @@
 // solicitante.c
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,9 +8,9 @@
 
 #define MAX_LINE 256
 
-void enviar_solicitud(FILE *fp_pipe, const char *linea) {
-    fprintf(fp_pipe, "%s\n", linea);
-    fflush(fp_pipe);  // para enviar inmediatamente
+void enviar_solicitud(int fd, const char *linea) {
+    write(fd, linea, strlen(linea));
+    write(fd, "\n", 1);
 }
 
 void recibir_respuesta(const char *pipe_respuesta) {
@@ -31,76 +30,56 @@ void recibir_respuesta(const char *pipe_respuesta) {
     close(fd_resp);
 }
 
-void modo_archivo(const char *pipe_name, const char *archivo) {
+void modo_archivo(const char *archivo_nombre, const char *pipe_name) {
+    FILE *archivo = fopen(archivo_nombre, "r");
+    if (!archivo) {
+        perror("Error abriendo archivo de solicitudes");
+        exit(1);
+    }
+
     int fd = open(pipe_name, O_WRONLY);
     if (fd == -1) {
         perror("Error abriendo pipe");
+        fclose(archivo);
         exit(1);
     }
 
-    FILE *fp_pipe = fdopen(fd, "w");
-    if (!fp_pipe) {
-        perror("fdopen pipe");
-        close(fd);
-        exit(1);
-    }
+    char linea_raw[MAX_LINE];
+    char linea_final[MAX_LINE];
+    char tipo;
+    char nombre[100];
+    int isbn;
 
-    FILE *fp_archivo = fopen(archivo, "r");
-    if (!fp_archivo) {
-        perror("Error abriendo archivo de solicitudes");
-        fclose(fp_pipe);
-        exit(1);
-    }
-
-    char linea[MAX_LINE];
     char pipe_respuesta[100];
+    snprintf(pipe_respuesta, sizeof(pipe_respuesta), "pipe_respuesta_%d", getpid());
+    mkfifo(pipe_respuesta, 0666);
 
-    while (fgets(linea, sizeof(linea), fp_archivo)) {
+    while (fgets(linea_raw, sizeof(linea_raw), archivo)) {
         // Eliminar salto de línea
-        linea[strcspn(linea, "\n")] = 0;
+        linea_raw[strcspn(linea_raw, "\n")] = 0;
 
-        // Crear pipe respuesta único para esta solicitud
-        snprintf(pipe_respuesta, sizeof(pipe_respuesta), "pipe_respuesta_%d", getpid());
-        mkfifo(pipe_respuesta, 0666);
-
-        // Agregar pipe respuesta a la línea (remplazamos o agregamos)
-        // Suponemos que la línea original no incluye pipe_respuesta, así que la reconstruimos:
-
-        // Leer tipo, nombre, isbn (3 campos)
-        char tipo;
-        char nombre[100];
-        int isbn;
-        int campos = sscanf(linea, " %c , %[^,] , %d", &tipo, nombre, &isbn);
-        if (campos != 3) {
-            fprintf(stderr, "Formato inválido en línea: %s\n", linea);
-            unlink(pipe_respuesta);
+        // Validar formato básico
+        int ok = sscanf(linea_raw, " %c , %[^,] , %d", &tipo, nombre, &isbn);
+        if (ok != 3) {
+            fprintf(stderr, "Línea inválida: %s\n", linea_raw);
             continue;
         }
 
-        char linea_con_pipe[MAX_LINE];
-        snprintf(linea_con_pipe, sizeof(linea_con_pipe), "%c, %s, %d, %s", tipo, nombre, isbn, pipe_respuesta);
-
-        enviar_solicitud(fp_pipe, linea_con_pipe);
+        snprintf(linea_final, sizeof(linea_final), "%c, %s, %d, %s", tipo, nombre, isbn, pipe_respuesta);
+        enviar_solicitud(fd, linea_final);
         recibir_respuesta(pipe_respuesta);
-
-        unlink(pipe_respuesta);
+        sleep(1); // opcional: evitar que colapsen respuestas
     }
 
-    fclose(fp_archivo);
-    fclose(fp_pipe);
+    close(fd);
+    fclose(archivo);
+    unlink(pipe_respuesta);
 }
 
 void modo_menu(const char *pipe_name) {
     int fd = open(pipe_name, O_WRONLY);
     if (fd == -1) {
         perror("Error abriendo pipe");
-        exit(1);
-    }
-
-    FILE *fp_pipe = fdopen(fd, "w");
-    if (!fp_pipe) {
-        perror("fdopen pipe");
-        close(fd);
         exit(1);
     }
 
@@ -119,7 +98,7 @@ void modo_menu(const char *pipe_name) {
 
         if (operacion == 'Q') {
             snprintf(linea, sizeof(linea), "Q, Salir, 0, %s", pipe_respuesta);
-            enviar_solicitud(fp_pipe, linea);
+            enviar_solicitud(fd, linea);
             break;
         }
 
@@ -129,11 +108,11 @@ void modo_menu(const char *pipe_name) {
         scanf("%d", &isbn);
 
         snprintf(linea, sizeof(linea), "%c, %s, %d, %s", operacion, nombre_libro, isbn, pipe_respuesta);
-        enviar_solicitud(fp_pipe, linea);
+        enviar_solicitud(fd, linea);
         recibir_respuesta(pipe_respuesta);
     }
 
-    fclose(fp_pipe);
+    close(fd);
     unlink(pipe_respuesta);
 }
 
@@ -155,12 +134,11 @@ int main(int argc, char *argv[]) {
     }
 
     if (archivo) {
-        modo_archivo(pipe_name, archivo);
+        modo_archivo(archivo, pipe_name);
     } else {
         modo_menu(pipe_name);
     }
 
     return 0;
 }
-
 
