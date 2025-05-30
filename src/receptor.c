@@ -30,6 +30,8 @@ int seguir_ejecutando = 1;
 
 // Hilo que procesa R y D (aquí solo imprime)
 void* hilo_auxiliar1(void* arg) {
+      (void)arg;
+
     while (seguir_ejecutando) {
         pthread_mutex_lock(&mutex);
         while (count == 0 && seguir_ejecutando) {
@@ -63,6 +65,8 @@ void* hilo_auxiliar1(void* arg) {
 }
 
 void* hilo_auxiliar2(void* arg) {
+        (void)arg;
+
     while (1) {
         char comando;
         scanf(" %c", &comando);
