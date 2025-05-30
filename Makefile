@@ -1,29 +1,52 @@
 # Makefile para el proyecto Sistema de Préstamo de Libros
-
-# Compilador
+# Definimos el compilador a usar (gcc)
 CC = gcc
 
-# Flags de compilación (puedes agregar -Wall para mostrar advertencias)
-CFLAGS = -pthread
+# Opciones de compilación:
+# -Wall: activa la mayoría de las advertencias
+# -Wextra: advertencias adicionales
+# -pedantic: avisos sobre estándares estrictos de C
+# -std=c11: usamos estándar C11
+# -g: añade información para depuración (debugging)
+CFLAGS = -Wall -Wextra -pedantic -std=c11 -g
 
-# Archivos fuente
-SRC = solicitante.c receptor.c
+# Flags para el linker (enlazador).
+# En receptor usamos pthread, por eso incluimos -lpthread.
+LDFLAGS = -lpthread
 
-# Archivos objeto (opcional si quieres usar .o)
-OBJ_SOL = solicitante
-OBJ_REC = receptor
+# Nombres de los ejecutables que vamos a generar
+RECEPTOR = receptor
+SOLICITANTE = solicitante
 
-# Regla por defecto: compilar ambos ejecutables
-all: $(OBJ_SOL) $(OBJ_REC)
+# Archivos fuente de cada programa
+SRC_RECEPTOR = receptor.c
+SRC_SOLICITANTE = solicitante.c
 
-# Compilar solicitante
-$(OBJ_SOL): solicitante.c
-	$(CC) $(CFLAGS) solicitante.c -o solicitante
+# PHONY indica que estas "tareas" no corresponden a archivos reales
+.PHONY: all clean run-receptor run-solicitante
 
-# Compilar receptor
-$(OBJ_REC): receptor.c
-	$(CC) $(CFLAGS) receptor.c -o receptor
+# Regla por defecto, compila ambos programas
+all: $(RECEPTOR) $(SOLICITANTE)
 
-# Limpiar archivos generados
+# Cómo compilar receptor:
+# $@ representa el objetivo (receptor)
+# $^ representa todos los prerequisitos (receptor.c)
+$(RECEPTOR): $(SRC_RECEPTOR)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+# Cómo compilar solicitante (sin pthread)
+$(SOLICITANTE): $(SRC_SOLICITANTE)
+	$(CC) $(CFLAGS) -o $@ $^
+
+# Limpia los ejecutables, archivos objeto y pipes temporales
 clean:
-	rm -f $(OBJ_SOL) $(OBJ_REC) *.o pipe_receptor salida.txt
+	rm -f $(RECEPTOR) $(SOLICITANTE) *.o pipe_receptor pipe_respuesta_*
+
+# Atajo para ejecutar el receptor directamente con ./receptor
+run-receptor: $(RECEPTOR)
+	./$(RECEPTOR)
+
+# Atajo para ejecutar el solicitante en modo menú
+run-solicitante: $(SOLICITANTE)
+	./$(SOLICITANTE) -p pipe_receptor
+
