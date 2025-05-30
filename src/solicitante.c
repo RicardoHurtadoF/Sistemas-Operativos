@@ -9,9 +9,9 @@
 
 #define MAX_LINE 256
 
-void enviar_solicitud(int fd, const char *linea) {
-    write(fd, linea, strlen(linea));
-    write(fd, "\n", 1);
+void enviar_solicitud(FILE *fp_pipe, const char *linea) {
+    fprintf(fp_pipe, "%s\n", linea);
+    fflush(fp_pipe);  // importante para que se envíe inmediatamente
 }
 
 void recibir_respuesta(const char *pipe_respuesta) {
@@ -38,6 +38,13 @@ void modo_menu(const char *pipe_name) {
         exit(1);
     }
 
+    FILE *fp_pipe = fdopen(fd, "w");
+    if (!fp_pipe) {
+        perror("fdopen pipe");
+        close(fd);
+        exit(1);
+    }
+
     char pipe_respuesta[100];
     snprintf(pipe_respuesta, sizeof(pipe_respuesta), "pipe_respuesta_%d", getpid());
     mkfifo(pipe_respuesta, 0666);
@@ -53,7 +60,7 @@ void modo_menu(const char *pipe_name) {
 
         if (operacion == 'Q') {
             snprintf(linea, sizeof(linea), "Q, Salir, 0, %s", pipe_respuesta);
-            enviar_solicitud(fd, linea);
+            enviar_solicitud(fp_pipe, linea);
             break;
         }
 
@@ -63,12 +70,12 @@ void modo_menu(const char *pipe_name) {
         scanf("%d", &isbn);
 
         snprintf(linea, sizeof(linea), "%c, %s, %d, %s", operacion, nombre_libro, isbn, pipe_respuesta);
-        enviar_solicitud(fd, linea);
+        enviar_solicitud(fp_pipe, linea);
         recibir_respuesta(pipe_respuesta);
     }
 
-    close(fd);
-    unlink(pipe_respuesta); // elimina el pipe cuando termina
+    fclose(fp_pipe);  // cierra también fd
+    unlink(pipe_respuesta);
 }
 
 int main(int argc, char *argv[]) {
@@ -89,10 +96,11 @@ int main(int argc, char *argv[]) {
     }
 
     if (archivo) {
-        printf(" Modo archivo no soporta respuesta aún. Usa -p sin -i para modo menú.\n");
+        printf("Modo archivo no soporta respuesta aún. Usa -p sin -i para modo menú.\n");
     } else {
         modo_menu(pipe_name);
     }
 
     return 0;
 }
+
