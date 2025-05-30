@@ -1,4 +1,6 @@
-P, Cálculo Diferencial, 120
-R, Hamlet, 234
-D, Alicia en el País de las Maravillas, 2133
-Q, Salir, 0
+P, Cien años de soledad, 9780307474728, pipe
+R, El principito, 9780156012195, pipe
+D, Don Quijote de la Mancha, 9788491050290, pipe
+P, 1984, 9780451524935, pipe
+P, La sombra del viento, 9788408130113, pipe
+Q, Salir, 0, pipe
