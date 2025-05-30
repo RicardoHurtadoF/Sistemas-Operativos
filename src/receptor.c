@@ -28,7 +28,7 @@ pthread_cond_t not_full = PTHREAD_COND_INITIALIZER;
 
 int seguir_ejecutando = 1;
 
-// Hilo que procesa R y D
+// Hilo que procesa R y D (aquí solo imprime)
 void* hilo_auxiliar1(void* arg) {
     while (seguir_ejecutando) {
         pthread_mutex_lock(&mutex);
@@ -48,6 +48,16 @@ void* hilo_auxiliar1(void* arg) {
         pthread_mutex_unlock(&mutex);
 
         printf("Hilo 1 procesando: %c, %s, %d\n", s.tipo, s.nombre, s.isbn);
+
+        // Aquí podrías enviar respuesta al solicitante si quieres
+        int fd_resp = open(s.pipe_respuesta, O_WRONLY);
+        if (fd_resp != -1) {
+            char respuesta[] = "Solicitud procesada en hilo auxiliar.\n";
+            write(fd_resp, respuesta, strlen(respuesta));
+            close(fd_resp);
+        } else {
+            perror("Error abriendo pipe de respuesta del solicitante en hilo auxiliar");
+        }
     }
     return NULL;
 }
@@ -70,11 +80,25 @@ void* hilo_auxiliar2(void* arg) {
 
 void procesar_solicitud(const char* linea) {
     Solicitud s;
-    sscanf(linea, " %c , %[^,] , %d , %s", &s.tipo, s.nombre, &s.isbn, s.pipe_respuesta);
+    int res = sscanf(linea, " %c , %[^,] , %d , %s", &s.tipo, s.nombre, &s.isbn, s.pipe_respuesta);
+    if (res != 4) {
+        fprintf(stderr, "Línea mal formateada: %s\n", linea);
+        return;
+    }
 
     if (s.tipo == 'P') {
         // Procesar préstamo aquí (verificar disponibilidad, responder)
         printf("Procesar préstamo: %s (%d)\n", s.nombre, s.isbn);
+
+        int fd_resp = open(s.pipe_respuesta, O_WRONLY);
+        if (fd_resp != -1) {
+            char respuesta[] = "Préstamo procesado correctamente.\n";
+            write(fd_resp, respuesta, strlen(respuesta));
+            close(fd_resp);
+        } else {
+            perror("Error abriendo pipe de respuesta del solicitante");
+        }
+
     } else if (s.tipo == 'R' || s.tipo == 'D') {
         pthread_mutex_lock(&mutex);
         while (count == BUFFER_SIZE) {
@@ -87,6 +111,10 @@ void procesar_solicitud(const char* linea) {
         pthread_mutex_unlock(&mutex);
     } else if (s.tipo == 'Q') {
         printf("Solicitante terminó.\n");
+        seguir_ejecutando = 0;
+        pthread_cond_signal(&not_empty);
+    } else {
+        printf("Tipo de solicitud desconocido: %c\n", s.tipo);
     }
 }
 
@@ -100,16 +128,26 @@ int main() {
         exit(1);
     }
 
+    FILE *fp = fdopen(fd, "r");
+    if (!fp) {
+        perror("Error en fdopen");
+        close(fd);
+        unlink(pipe_name);
+        exit(1);
+    }
+
     pthread_t hilo1, hilo2;
     pthread_create(&hilo1, NULL, hilo_auxiliar1, NULL);
     pthread_create(&hilo2, NULL, hilo_auxiliar2, NULL);
 
     char linea[MAX_LINE];
-    while (seguir_ejecutando && read(fd, linea, sizeof(linea)) > 0) {
+    while (seguir_ejecutando && fgets(linea, sizeof(linea), fp)) {
+        // Eliminar salto de línea si existe
+        linea[strcspn(linea, "\n")] = 0;
         procesar_solicitud(linea);
     }
 
-    close(fd);
+    fclose(fp); // cierra fd y fp
     unlink(pipe_name);
 
     pthread_join(hilo1, NULL);
