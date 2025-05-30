@@ -1,6 +1,9 @@
-P, Cien años de soledad, 9780307474728, pipe
-R, El principito, 9780156012195, pipe
-D, Don Quijote de la Mancha, 9788491050290, pipe
-P, 1984, 9780451524935, pipe
-P, La sombra del viento, 9788408130113, pipe
+P, Cien años de soledad, 100, pipe
+R, El principito, 29062004, pipe
+D, Don Quijote de la Mancha, 4951, pipe
+P, 1984, 1984, pipe
+P, La sombra del viento, 1409, pipe
+P, Alicia, 5149, pipe
+P Silmarillion, 5767, pipe
+R, Relatos de un Naufrago, 5555, pipe
 Q, Salir, 0, pipe
