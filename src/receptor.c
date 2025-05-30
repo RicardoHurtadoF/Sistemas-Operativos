@@ -140,15 +140,16 @@ void* hilo_auxiliar2(void* arg) {
             pthread_cond_signal(&not_empty);
             break;
         } else if (comando == 'r') {
-            printf("\n--- REPORTE DE LIBROS ---\n");
-            for (int i = 0; i < total_libros; i++) {
-                printf("%s, ISBN: %d, Ejemplares: %d\n", biblioteca[i].nombre, biblioteca[i].isbn, biblioteca[i].cantidad);
-                for (int j = 0; j < biblioteca[i].cantidad; j++) {
-                    Ejemplar e = biblioteca[i].ejemplares[j];
-                    printf("  Ejemplar %d - %c (%s)\n", e.numero, e.estado, e.fecha);
-                }
-                printf("\n");
-            }
+          printf("\n--- REPORTE DE LIBROS ---\n");
+          for (int i = 0; i < total_libros; i++) {
+              Libro libro = biblioteca[i];
+              for (int j = 0; j < libro.cantidad; j++) {
+                  Ejemplar e = libro.ejemplares[j];
+                  if (e.estado == 'P' || e.estado == 'R' || e.estado == 'D') {
+                      printf("%c, %s, %d, %d, %s\n", e.estado, libro.nombre, libro.isbn, e.numero, e.fecha);
+                  }
+              }
+          }
         }
     }
     return NULL;
