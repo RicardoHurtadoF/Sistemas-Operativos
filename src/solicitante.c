@@ -11,7 +11,7 @@
 
 void enviar_solicitud(FILE *fp_pipe, const char *linea) {
     fprintf(fp_pipe, "%s\n", linea);
-    fflush(fp_pipe);  // importante para que se envíe inmediatamente
+    fflush(fp_pipe);  // para enviar inmediatamente
 }
 
 void recibir_respuesta(const char *pipe_respuesta) {
@@ -29,6 +29,65 @@ void recibir_respuesta(const char *pipe_respuesta) {
     }
 
     close(fd_resp);
+}
+
+void modo_archivo(const char *pipe_name, const char *archivo) {
+    int fd = open(pipe_name, O_WRONLY);
+    if (fd == -1) {
+        perror("Error abriendo pipe");
+        exit(1);
+    }
+
+    FILE *fp_pipe = fdopen(fd, "w");
+    if (!fp_pipe) {
+        perror("fdopen pipe");
+        close(fd);
+        exit(1);
+    }
+
+    FILE *fp_archivo = fopen(archivo, "r");
+    if (!fp_archivo) {
+        perror("Error abriendo archivo de solicitudes");
+        fclose(fp_pipe);
+        exit(1);
+    }
+
+    char linea[MAX_LINE];
+    char pipe_respuesta[100];
+
+    while (fgets(linea, sizeof(linea), fp_archivo)) {
+        // Eliminar salto de línea
+        linea[strcspn(linea, "\n")] = 0;
+
+        // Crear pipe respuesta único para esta solicitud
+        snprintf(pipe_respuesta, sizeof(pipe_respuesta), "pipe_respuesta_%d", getpid());
+        mkfifo(pipe_respuesta, 0666);
+
+        // Agregar pipe respuesta a la línea (remplazamos o agregamos)
+        // Suponemos que la línea original no incluye pipe_respuesta, así que la reconstruimos:
+
+        // Leer tipo, nombre, isbn (3 campos)
+        char tipo;
+        char nombre[100];
+        int isbn;
+        int campos = sscanf(linea, " %c , %[^,] , %d", &tipo, nombre, &isbn);
+        if (campos != 3) {
+            fprintf(stderr, "Formato inválido en línea: %s\n", linea);
+            unlink(pipe_respuesta);
+            continue;
+        }
+
+        char linea_con_pipe[MAX_LINE];
+        snprintf(linea_con_pipe, sizeof(linea_con_pipe), "%c, %s, %d, %s", tipo, nombre, isbn, pipe_respuesta);
+
+        enviar_solicitud(fp_pipe, linea_con_pipe);
+        recibir_respuesta(pipe_respuesta);
+
+        unlink(pipe_respuesta);
+    }
+
+    fclose(fp_archivo);
+    fclose(fp_pipe);
 }
 
 void modo_menu(const char *pipe_name) {
@@ -74,7 +133,7 @@ void modo_menu(const char *pipe_name) {
         recibir_respuesta(pipe_respuesta);
     }
 
-    fclose(fp_pipe);  // cierra también fd
+    fclose(fp_pipe);
     unlink(pipe_respuesta);
 }
 
@@ -96,11 +155,12 @@ int main(int argc, char *argv[]) {
     }
 
     if (archivo) {
-        printf("Modo archivo no soporta respuesta aún. Usa -p sin -i para modo menú.\n");
+        modo_archivo(pipe_name, archivo);
     } else {
         modo_menu(pipe_name);
     }
 
     return 0;
 }
+
 
