@@ -8,7 +8,7 @@ CC = gcc
 # -pedantic: avisos sobre estándares estrictos de C
 # -std=c11: usamos estándar C11
 # -g: añade información para depuración (debugging)
-CFLAGS = -Wall -Wextra -pedantic -std=c11 -g
+CFLAGS = -Wall -Wextra -pedantic -std=c11 -g -D_POSIX_C_SOURCE=200809L
 
 # Flags para el linker (enlazador).
 # En receptor usamos pthread, por eso incluimos -lpthread.
