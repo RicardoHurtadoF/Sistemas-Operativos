@@ -1,4 +1,9 @@
-P, Cálculo Diferencial, 120
-R, Hamlet, 234
-D, Alicia en el País de las Maravillas, 2133
-Q, Salir, 0
+P, Cien años de soledad, 100, pipe
+R, El principito, 29062004, pipe
+D, Don Quijote de la Mancha, 4951, pipe
+P, 1984, 1984, pipe
+P, La sombra del viento, 1409, pipe
+P, Alicia, 5149, pipe
+P Silmarillion, 5767, pipe
+R, Relatos de un Naufrago, 5555, pipe
+Q, Salir, 0, pipe
