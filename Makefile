@@ -44,9 +44,15 @@ clean:
 
 # Atajo para ejecutar el receptor directamente con ./receptor
 run-receptor: $(RECEPTOR)
-	./$(RECEPTOR)
+	./$(RECEPTOR) -p pipe_receptor -f Libros.txt
 
 # Atajo para ejecutar el solicitante en modo menú
 run-solicitante: $(SOLICITANTE)
+	@test -p pipe_receptor || (echo "Error: pipe_receptor no existe. Ejecuta primero receptor." && exit 1)
 	./$(SOLICITANTE) -p pipe_receptor
 
+# Regla para probar el sistema completo usando archivos predefinidos
+run-test: $(RECEPTOR) $(SOLICITANTE)
+	./$(RECEPTOR) -p pipe_receptor -f libros.txt & \
+	sleep 1 && \
+	./$(SOLICITANTE) -i input_solicitudes.txt -p pipe_receptor
