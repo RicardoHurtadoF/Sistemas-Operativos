@@ -49,6 +49,7 @@ c. Utilizar de forma correcta llamadas al sistema relacionadas con hilos y proce
 
 ## 🧪 Compilación y Ejecución
 
+Descarga todos los archivos y colocalos en una miasma carpeta
 ### Compilar
 
 Para compilar ambos programas (`receptor` y `solicitante`) utiliza el Makefile incluido. Solo ejecuta:
