@@ -13,6 +13,8 @@
 #define MAX_LIBROS 100
 #define MAX_EJEMPLARES 10
 
+int verbose = 0;
+
 typedef struct {
     int numero;
     char estado; // 'D' o 'P'
@@ -30,7 +32,7 @@ typedef struct {
     char tipo;                // P, R, D
     char nombre[100];
     int isbn;
-    char pipe_respuesta[100]; // Pipe para responderle al PS
+    char pipe_respuesta[100];
 } Solicitud;
 
 Solicitud buffer[BUFFER_SIZE];
@@ -118,7 +120,7 @@ void* hilo_auxiliar1(void* arg) {
             int fd_resp = open(s.pipe_respuesta, O_WRONLY);
             if (fd_resp != -1) {
                 char msg[256];
-                snprintf(msg, sizeof(msg), "❌ %s falló: ejemplar no encontrado o no prestado\n", s.tipo == 'D' ? "Devolución" : "Renovación");
+                snprintf(msg, sizeof(msg), " %s falló: ejemplar no encontrado o no prestado\n", s.tipo == 'D' ? "Devolución" : "Renovación");
                 write(fd_resp, msg, strlen(msg));
                 close(fd_resp);
             }
@@ -193,7 +195,7 @@ void procesar_solicitud(const char* linea) {
         if (!encontrado) {
             int fd_resp = open(s.pipe_respuesta, O_WRONLY);
             if (fd_resp != -1) {
-                char msg[] = "❌ No hay ejemplares disponibles o el libro no existe\n";
+                char msg[] = " No hay ejemplares disponibles o el libro no existe\n";
                 write(fd_resp, msg, strlen(msg));
                 close(fd_resp);
             }
@@ -272,18 +274,23 @@ void guardar_base_datos(const char *archivo) {
 
 int main(int argc, char *argv[]) {
     if (argc < 5) {
-        fprintf(stderr, "Uso: %s -p pipe_name -f bd_libros.txt\n", argv[0]);
+        fprintf(stderr, "Uso: %s -p pipe_name -f bd_libros.txt [-s salida.txt] [-v]\n", argv[0]);
         exit(1);
     }
 
     const char *pipe_name = NULL;
     const char *bd_file = NULL;
+    const char *salida_file = "salida.txt";
 
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-p") == 0 && i + 1 < argc) {
             pipe_name = argv[++i];
         } else if (strcmp(argv[i], "-f") == 0 && i + 1 < argc) {
             bd_file = argv[++i];
+        } else if (strcmp(argv[i], "-s") == 0 && i + 1 < argc) {
+            salida_file = argv[++i];
+        } else if (strcmp(argv[i], "-v") == 0) {
+            verbose = 1;
         }
     }
 
@@ -292,7 +299,9 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
+    if (verbose) printf("[INFO] Cargando base de datos desde %s...\n", bd_file);
     cargar_base_datos(bd_file);
+
     mkfifo(pipe_name, 0666);
     int fd = open(pipe_name, O_RDONLY);
     if (fd == -1) {
@@ -315,6 +324,7 @@ int main(int argc, char *argv[]) {
     char linea[MAX_LINE];
     while (seguir_ejecutando && fgets(linea, sizeof(linea), fp)) {
         linea[strcspn(linea, "\n")] = 0;
+        if (verbose) printf("[INFO] Solicitud recibida: %s\n", linea);
         procesar_solicitud(linea);
     }
 
@@ -322,6 +332,10 @@ int main(int argc, char *argv[]) {
     unlink(pipe_name);
     pthread_join(hilo1, NULL);
     pthread_join(hilo2, NULL);
-    guardar_base_datos("salida.txt");
+
+    if (verbose) printf("[INFO] Guardando base de datos final en %s...\n", salida_file);
+    guardar_base_datos(salida_file);
+
+    if (verbose) printf("[INFO] Ejecución terminada correctamente.\n");
     return 0;
 }
