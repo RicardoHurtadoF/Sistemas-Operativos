@@ -89,7 +89,7 @@ void* hilo_auxiliar1(void* arg) {
                         int fd_resp = open(s.pipe_respuesta, O_WRONLY);
                         if (fd_resp != -1) {
                             char msg[256];
-                            snprintf(msg, sizeof(msg), "✔️ Devolución registrada: %s (Ejemplar %d)\n", s.nombre, e->numero);
+                            snprintf(msg, sizeof(msg), "Devolución registrada: %s (Ejemplar %d)\n", s.nombre, e->numero);
                             write(fd_resp, msg, strlen(msg));
                             close(fd_resp);
                         }
@@ -105,7 +105,7 @@ void* hilo_auxiliar1(void* arg) {
                         int fd_resp = open(s.pipe_respuesta, O_WRONLY);
                         if (fd_resp != -1) {
                             char msg[256];
-                            snprintf(msg, sizeof(msg), "✔️ Renovación registrada: %s (Ejemplar %d)\n", s.nombre, e->numero);
+                            snprintf(msg, sizeof(msg), "Renovación registrada: %s (Ejemplar %d)\n", s.nombre, e->numero);
                             write(fd_resp, msg, strlen(msg));
                             close(fd_resp);
                         }
@@ -181,7 +181,7 @@ void procesar_solicitud(const char* linea) {
                         if (fd_resp != -1) {
                             char respuesta[256];
                             snprintf(respuesta, sizeof(respuesta),
-                                     "✔️ Préstamo exitoso: %s (Ejemplar %d)\n",
+                                     "Préstamo exitoso: %s (Ejemplar %d)\n",
                                      s.nombre, biblioteca[i].ejemplares[j].numero);
                             write(fd_resp, respuesta, strlen(respuesta));
                             close(fd_resp);
