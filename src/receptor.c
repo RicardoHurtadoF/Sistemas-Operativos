@@ -51,6 +51,9 @@ int seguir_ejecutando = 1;
 void cargar_base_datos(const char *archivo);
 void guardar_base_datos(const char *archivo);
 
+
+// Función ejecutada por el hilo auxiliar 1. Extrae solicitudes tipo R y D del buffer
+// y actualiza el estado del libro correspondiente. También responde al solicitante.
 void* hilo_auxiliar1(void* arg) {
     (void)arg;
 
@@ -131,6 +134,8 @@ void* hilo_auxiliar1(void* arg) {
 }
 
 
+// Función ejecutada por el hilo auxiliar 2. Escucha comandos por consola:
+// 's' para terminar el programa y 'r' para mostrar el estado actual de los libros.
 void* hilo_auxiliar2(void* arg) {
     (void)arg;
     while (1) {
@@ -157,6 +162,9 @@ void* hilo_auxiliar2(void* arg) {
     return NULL;
 }
 
+// Procesa una solicitud recibida. Si es tipo P, la atiende directamente.
+// Si es tipo R o D, la pone en el buffer circular para ser procesada por hilo_auxiliar1.
+// Si es tipo Q, marca fin de ejecución.
 void procesar_solicitud(const char* linea) {
     Solicitud s;
     int res = sscanf(linea, " %c , %[^,] , %d , %s", &s.tipo, s.nombre, &s.isbn, s.pipe_respuesta);
@@ -221,6 +229,9 @@ void procesar_solicitud(const char* linea) {
     }
 }
 
+
+// Carga los libros y ejemplares desde un archivo en formato estructurado.
+// Este archivo contiene el nombre, ISBN, cantidad y estado de cada ejemplar.
 void cargar_base_datos(const char *archivo) {
     FILE *f = fopen(archivo, "r");
     if (!f) {
@@ -254,6 +265,7 @@ void cargar_base_datos(const char *archivo) {
     fclose(f);
 }
 
+// Guarda el estado actual de todos los libros y ejemplares en un archivo de salida.
 void guardar_base_datos(const char *archivo) {
     FILE *f = fopen(archivo, "w");
     if (!f) {
@@ -272,6 +284,7 @@ void guardar_base_datos(const char *archivo) {
     fclose(f);
 }
 
+// abre el pipe FIFO para recibir solicitudes, y mantiene el receptor en ejecución
 int main(int argc, char *argv[]) {
     if (argc < 5) {
         fprintf(stderr, "Uso: %s -p pipe_name -f bd_libros.txt [-s salida.txt] [-v]\n", argv[0]);
