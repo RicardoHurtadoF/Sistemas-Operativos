@@ -8,11 +8,13 @@
 
 #define MAX_LINE 256
 
+// Envia una solicitud formateada al receptor a través del pipe nominal.
 void enviar_solicitud(int fd, const char *linea) {
     write(fd, linea, strlen(linea));
     write(fd, "\n", 1);
 }
 
+// Abre el pipe de respuesta del solicitante y muestra la respuesta enviada por el receptor.
 void recibir_respuesta(const char *pipe_respuesta) {
     int fd_resp = open(pipe_respuesta, O_RDONLY);
     if (fd_resp == -1) {
@@ -30,6 +32,7 @@ void recibir_respuesta(const char *pipe_respuesta) {
     close(fd_resp);
 }
 
+// Lee solicitudes desde un archivo .txt, les agrega el pipe de respuesta y las envía al receptor.
 void modo_archivo(const char *archivo_nombre, const char *pipe_name) {
     FILE *archivo = fopen(archivo_nombre, "r");
     if (!archivo) {
@@ -76,6 +79,7 @@ void modo_archivo(const char *archivo_nombre, const char *pipe_name) {
     unlink(pipe_respuesta);
 }
 
+// Permite al usuario ingresar solicitudes manualmente desde consola, las envía y recibe la respuesta.
 void modo_menu(const char *pipe_name) {
     int fd = open(pipe_name, O_WRONLY);
     if (fd == -1) {
@@ -116,6 +120,7 @@ void modo_menu(const char *pipe_name) {
     unlink(pipe_respuesta);
 }
 
+// recive los argumentos y selecciona modo archivo o modo interactivo.
 int main(int argc, char *argv[]) {
     const char *archivo = NULL;
     const char *pipe_name = NULL;
